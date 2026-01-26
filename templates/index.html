@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 
 <head>
-<title>Meu projeto Flask</title>
+<title>My small python project</title>
 
 </head>
 <body>
 
 <div>
-	<h1>Olá {{ nome }}</h1>
-	<h2>Teste de formulários:</h2>
-	<p>Seja bem-vindo!</p>
+	<h1>Hello {{ name }}</h1>
+	<h2>Form test:</h2>
+	<p>Welcome!</p>
 	<pre>
-	<b>-> Seus dados atuais:</b>
-	Email: {{ email_novo }}
-	Senha: {{ senha }}
+	<b>-> Your current data:</b>
+	Email: {{ email }}
+	Senha: {{ password }}
 	</pre>
-	<form action="/processar" method="POST">
-	<input type="text" name="email_novo" placeholder="Insira seu novo email">
-	<button type="submit">Enviar</button>
+	<form action="/process" method="POST">
+	<input type="text" name="email_novo" placeholder="Insert your new emaik">
+	<button type="submit">Submit</button>
 	</form>
 
 </div>

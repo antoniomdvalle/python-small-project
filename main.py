@@ -2,16 +2,12 @@
 from flask import Flask
 
 
-class user(nome, senha, email):
+class user(name, password, email):
 	
-	tipoConta = "user"
+	account_type = "user"
 	
-	def __init__(self, nome, senha, email):
-		self.nome = nome
-		self.senha = senha
+	def __init__(self, name, password, email):
+		self.name = name
+		self.password = password
 		self.email = email
 	
-	def cumprimentar(self):
-		print("Olá mundo")
-
-user.cumprimentar()
