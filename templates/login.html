@@ -8,6 +8,9 @@
 <body>
 <h1> Login now </h1>
 
-<a href="{{url_for('dashboard')}}" class="button-style">Acess</a>
-
+<form action="/login" method="POST">
+	<input type="email" name="email" placeholder="Insert your email here">
+	<input type="password" name="password" placeholder="Insert your password">
+	<button type="submit">Submit</button>
+</form>
 </body>

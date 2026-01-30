@@ -1,4 +1,3 @@
-from app import app
 from main import User
 
 def show_users():
@@ -8,8 +7,5 @@ def show_users():
 	print("-" * 60)
 	
 	for u in users:
-		print(f"{u.id:<5} | {u.name:<15} | {u.email:<25} | {u.password}")
+		print(f"{u.id:<5} | {u.name:<15} | {u.email:<25} | {u.password_hash :<20}")
 
-
-if __name__ == "__main__":
-	show_users()

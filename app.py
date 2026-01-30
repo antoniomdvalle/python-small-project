@@ -3,14 +3,20 @@ from markupsafe import escape
 from flask import Flask, url_for, render_template, request, redirect
 from main import User as u
 import os
+from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy 
 from extensions import db
+from check_db import show_users
+
+
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "secret"
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI']  = 'sqlite:///database.db'
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -22,13 +28,20 @@ with app.app_context():
 def home_page():
 	return render_template("index.html")
 	
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
-	
-	usr_name = request.args.get('name')
-	if usr_name:
-		session['user_name'] = usr_name
-	return render_template("login.html", name = usr_name)# for the placeholder on the future form
+	if request.method == "POST":
+		informed_email = request.form.get('email')
+		informed_password = request.form.get('password')
+		user = u.query.filter_by(email_db=informed_email).first()
+		print("INFORMED Email and password recovered.")
+		if user and user.verify_password(informed_password):
+			session['user_id'] = user.id
+			session['user_name'] = user.name
+			return redirect(url_for('dashboard'))
+		
+		return "Invalid email or password", 401
+	return render_template("login.html")
 	
 @app.route("/signup")
 def signup():
@@ -44,24 +57,43 @@ def dashboard():
 	
 @app.route("/process", methods=["POST"])
 def process():
-	email =  request.form.get('email')
-	name = request.form.get('name')
-	password = request.form.get('password')
+	form_email =  request.form.get('email')
+	form_name = request.form.get('name')
+	form_password = request.form.get('password')
+	print(f"Dados recebidos: {form_email}, {form_name}")
 	try:
-		new_user = u(name, password, email)
+		new_user = u(name = form_name, password = form_password, email = form_email)
+		
 		
 		session['user_name'] = new_user.name
 		
+		print("Trying to post, session created")
+		db.session.add(new_user)
+		db.session.commit()
+		print("User added on database")
 		return redirect(url_for("login"))
 		
-	except ValueError as ve:
-		return f"Validation error: { ve } !", 400
+	except Exception as e:
+		print("Error happened during execution.")
+		return f"Validation error: { e } !", 400
 
 @app.route("/logout")
 def logout():
 	session.pop('user_name', None)
 	return redirect(url_for('home_page'))
 		
+
+
+@app.route("/user")
+def check_usrs():
+	all_users = u.query.all()
+	print("Query done")
+	show_users()
+	print("Called func on check_db")
+	return redirect(url_for('dashboard'))
+
+	
+
 
 if __name__ == "__main__": 
 	with app.app_context():
